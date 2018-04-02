@@ -101,4 +101,59 @@ mutate(clean, dep_time, hour = dep_time %/% 100,
 #row_number() min_rank() percent_rank()
 #are args datasets? columns?????? IDK
 
+#GROUP****
+
+#SUMMARISE
+summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
+#gives avg of var
+
+#THIS PART IS ACTUALLY IMPORTANT
+by_day <- group_by(flights, year, month, day)
+summarise(by_day, delay = mean(dep_delay, na.rm = TRUE))
+#applies "verb" functiony averagy thing to subsets of data
+#above^ for each date, finds the average delay
+#POWERFUL AF
+
+
+
+
+#relationship btwn distance and avg delay for each location
+#----------------
+by_dest <- group_by(flights, dest) #group by destination
+delay <- summarise(by_dest, #for each destination/airport, 3 functions: number of flights, avg flight distance, avg delay
+                   count = n(), #what? number of observation from that irport?
+                   dist = mean(distance, na.rm = TRUE),
+                   delay = mean(arr_delay, na.rm = TRUE)
+)
+delay <- filter(delay, count > 20, dest != "HNL") #set "delay" as summary excluding HNL and n<8
+# It looks like delays increase with distance up to ~750 miles 
+# and then decrease. Maybe as flights get longer there's more 
+# ability to make up delays in the air?
+ggplot(data = delay, mapping = aes(x = dist, y = delay)) +
+  geom_point(aes(size = count), alpha = 1/3) +
+  geom_smooth(se = FALSE)
+#> `geom_smooth()` using method = 'loess'
+#---------------------
+
+
+#pipe is %>%
+#dafuq???
+delays <- flights %>% 
+  group_by(dest) %>% 
+  summarise(
+    count = n(),
+    dist = mean(distance, na.rm = TRUE),
+    delay = mean(arr_delay, na.rm = TRUE)
+  ) %>% 
+  filter(count > 20, dest != "HNL")
+    
+delays
+#n() is a count, include whenever summary()
+#checks how many obs in each group
+
+
+count(clean, tailnum, wt = distance)
+#this^ and that\|/ do the same thing
+clean %>%
+  clean( tailnum, wt = distance)
 
