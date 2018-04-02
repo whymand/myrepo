@@ -66,3 +66,39 @@ select(flights,starts_with("d"))
 #matches("(.)\\1"): selects variables that match a regular expression. This one matches
 #any variables that contain repeated characters. You’ll learn more about regular expressions in strings.
 #num_range("x", 1:3) matches x1, x2 and x3.
+#?select
+
+# use rename() to rename variables
+clean <- na.omit(flights) #omit all rows with missing values
+clean <- rename(clean, yearr = year)
+View(clean)
+clean <- rename(clean, year = yearr)
+#dataset <- rename(dataset, newcolumname = oldcolumnname)
+
+#MUTATE
+#add a new column that is a function of an existing column
+#dataset<-mutate(dataset, newvarname = f(oldvars))
+clean<-mutate(clean, gain = arr_delay - dep_delay)
+View(clean)
+#transmute: deletes all vars except the one you changed
+clea<-transmute(clean, yearr = year+1)
+View(clea)
+#mutate functions must be vectorized
+#vectorized=#input values => #output values
+#can use remainder, division functions for time:
+#from number of minutes to  hours and minutes
+mutate(clean, dep_time, hour = dep_time %/% 100,
+       minute=dep_time %% 100)
+#    %/% = division     %% = remainder
+#log2() doubling scale
+
+#lead()
+#lag()
+#leadding and lagging values arg=dataset?
+
+#cumulative + rolling aggregates: cumsum() cumprod() cummin()
+#RcppRoll package
+#row_number() min_rank() percent_rank()
+#are args datasets? columns?????? IDK
+
+
