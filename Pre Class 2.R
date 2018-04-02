@@ -135,7 +135,7 @@ ggplot(data = delay, mapping = aes(x = dist, y = delay)) +
 #> `geom_smooth()` using method = 'loess'
 #---------------------
 
-
+delay
 #pipe is %>%
 #dafuq???
 delays <- flights %>% 
@@ -143,7 +143,7 @@ delays <- flights %>%
   summarise(
     count = n(),
     dist = mean(distance, na.rm = TRUE),
-    delay = mean(arr_delay, na.rm = TRUE)
+    delay = mean(arr_delay, na.rm = TRUE) #recursiveness is bad results change with each rerun of code
   ) %>% 
   filter(count > 20, dest != "HNL")
     
