@@ -1,0 +1,48 @@
+---
+title: "Class 6 Apr 11 Week 3 Wed"
+author: "david"
+date: "April 11, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+*Relational Data*
+not just one table, combination, relations between multiple data frames encode information
+Relations are between two tables only, can relate a->b then ab->c but not a->b<-c
+
+relational verbs:
+mutating joins: create new columns in table
+filter values in table
+
+e,g, superheroes and publishers data frames: 
+why 2? 
+observations are on completely different type of thing, dont belong in same table (charachters in 1, publishers in 2)
+how to join? mutating join: both tables have "publisher" column
+```{r}
+inner_join(x = superheroes, y = publishers)
+# x= , y= put names of two tables
+```
+hellboy is lost bc its publisher isnt in y
+
+left_join(x=x, y=y) keeps all rows from x dataframes, and keeps all columns from x and y dtaframes; inner_join drops all rows that dont have matches
+
+right_join returns all rows from y, all columns from x and y
+
+full_join keeps all rows and columns from x AND y
+
+Merge function is base R function: it can do all of these kinds of joins,
+can write inside functions
+in dplyr, put which join you want to do as an argument inside functions
+
+R looks for key columns itself: assumes columns with same name in both datafraames is key column and contains information
+another arguemnt "by=" can tell R which columns in dataframes 1 and 2 are key
+
+#filterjoinfunction
+
+semi_join(x=1stdataframe,y=2nddataframe) only keeps columns that were in 1st data frame..
+uses 2nd dataframe to filter 1st dataframe, doesnt add any add'l values from 2nd
+
+anti_join(x=,y=) keeps rows in x that do NOT have a corresponding row in y
