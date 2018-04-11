@@ -17,6 +17,9 @@ relational verbs:
 mutating joins: create new columns in table
 filter values in table
 
+
+#join functions
+
 e,g, superheroes and publishers data frames: 
 why 2? 
 observations are on completely different type of thing, dont belong in same table (charachters in 1, publishers in 2)
@@ -40,9 +43,78 @@ in dplyr, put which join you want to do as an argument inside functions
 R looks for key columns itself: assumes columns with same name in both datafraames is key column and contains information
 another arguemnt "by=" can tell R which columns in dataframes 1 and 2 are key
 
-#filterjoinfunction
+#filter join functions 
 
 semi_join(x=1stdataframe,y=2nddataframe) only keeps columns that were in 1st data frame..
 uses 2nd dataframe to filter 1st dataframe, doesnt add any add'l values from 2nd
 
 anti_join(x=,y=) keeps rows in x that do NOT have a corresponding row in y
+
+#exercises 
+
+library(tidyverse)
+library(nycflights13)
+theme_set(theme_minimal())
+
+
+age and departure: join planes with flights
+one row for each flight: keep all rows in flights
+
+```{r}
+flights<-mutate(flights, yearflight = year)
+tailflight<-select(flights, tailnum, yearflight, dep_delay)
+age_delay<-left_join(x=tailflight, y=planes)
+age_delay2 <- mutate(age_delay, year = yearflight-year)
+ggplot(age_delay2, aes(year, dep_delay)) +
+  geom_smooth()
+```
+
+```{r}
+plane_age <- planes %>%
+  mutate(age = 2013-year) %>%
+  select(age, tailnum)
+
+left_join(x=plane_age, y=flights) %>%
+  ggplot(aes(age, dep_delay)) +
+    geom_smooth()
+```
+
+#Transforming and Visualizing factors
+factors used to store categorical values, eg strings of text, store associated labels
+can conver cha. var to factor var when there is FINITE amount of values a var could take on (fixed num of categories with specific assoc labels)
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(rcfss)
+theme_set(theme_minimal())
+
+# load the data
+data("gun_deaths")
+gun_deaths
+```
+
+```{r}
+spergajk<-gun_deaths%>%
+  mutate(month = factor(month, levels = c(1:12), labels = month.abb))
+
+spergajk %>%
+  ggplot(aes(month)) +
+  geom_bar() +
+  labs(x="Month", y="# of deaths", title="U.S. Gun Deaths (2012-2014), by Month")
+
+spergajk %>%
+  count(month) %>%
+  ggplot(aes(fct_reorder(month, n), n)) +
+  geom_col() +
+  labs(x="Month", y="# of deaths", title="U.S. Gun Deaths (2012-2014), by Month")
+
+spergajk %>%
+  count(month) %>%
+  ggplot(aes(fct_reorder(month, n), n)) +
+  geom_col() +
+  labs(title = "Gun Deaths in the United States (2012-2014)",
+       x = "Month",
+       y = "Number of gun deaths")
+ 
+```
