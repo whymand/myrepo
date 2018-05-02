@@ -1,0 +1,224 @@
+---
+title: "Class 8 Week 4 Wednes April 18"
+author: "david"
+date: "April 18, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#week 4 wednes
+*Week 6 Monday at bottom*
+
+vectors and iteration tho
+dataframe is not the basic unit of data: its VeCtOrS!
+
+2 types
+Atomic Vectors - homogenous, 1 type of data only
+List Vectors (lists) - heterogenous, flexible with many types
+
+NA = Null (null means missing vector as opposed to na meaning missing value)44
+
+logical vector: either true or false or missing value
+BUUUH<-c(TRUE, FALSE, TRUE, BA)
+
+Numeric vectors: most numbers stored as double values; with decimal points... they contain numbers
+c(1.3,4.2,5)
+(integers can only do whole numbers)
+
+Character vectors [its in quotes!]
+c("goodnight","hello","buuu")
+
+A scalar is a vector of length one!
+if you add a scalar to a vector, each value of the vector increases by the scalar
+100+ c(1,2) = c(101,102)
+
+problem: adding vectors of different length: will repeat the smaller vector again and again until lengths are same (eggu eggu eggu eggu)
+
+
+*** filter function works for dataframes, NOT vectors
+if you want to *SUBSET* vector
+- use positive integers (to indicate the position of the value in the prior vector that you select)
+      *extract from x vector the elements at the following positions
+- use negative integers
+      *extract from x vector all EXCEPT those at the following positions
+x=("a","b","c")
+x[c(3,2)]
+will output: "c" "b"
+cannot mix positive and negative integers
+
+- can filter by missing/non-missing values
+*keep only missing values
+x[is.na(x)]
+*keep only non-missing values
+x[!is.na(x)]
+
+- can filter by values of elements
+*keep only values > 5
+x[x >5]
+
+can use modular division
+x[x %% 2 ==0] #keep all elements in X that are divisible evenly by 2 (no remainder) 
+%%=modular division
+^this does not filter out missing values
+
+```{r}
+(x <- seq(from = 1, to = 10))
+x[c(1:4,7)]
+```
+
+```{r}
+(x <- seq(from = 1, to = 10))
+x[-9] #or x[c(-9)]
+```
+
+```{r}
+(x <- seq(from = 1, to = 10))
+x>5
+x[x >5]
+```
+
+```{r}
+(x <- seq(from = 1, to = 10))
+x[x %% 3 == 0]
+```
+
+LISTS
+a dataframe is a special type of list
+- in list, each row is a vector
+- all list columns must have same length
+- subset of list will alwats be another list
+a[[1]] --> list subset to vector (strip away the list hierarchy, extract the element, a vector)
+a[1] --> list subset to list
+- eg, element of list = row = vector
+
+
+```{r}
+z <- list(a = 1:3, b = "a string", c = pi, d = list(-1, -5))
+str(z)
+z[["a"]]
+z[pi]
+z[c(1,3)]
+
+```
+
+ITERATIVE OPERATIONS
+for loop
+
+3 elements
+1. output (where ami gonna stooore)
+2. sequence (what am i looping over)
+3. operation (what the function actually does)
+
+1.
+output <- vector(mode="double", length=ncol(df))
+
+2.
+i in seq_along(df)
+seq_along(df)
+## [1] 1 2 3 4
+
+first time through loop, i will equal 1, 2nd time, i=2... etc
+
+3.
+```{r}
+output[[i]] <- median(df[[i]]) # we are calculating median of the i'th column (1st, 2nd etc)
+#1st, 2nd, 3rd, 4th column median values are calculated and stored in succession
+```
+
+```{r}
+#complete for loop:
+output <- vector(mode = "double", length = ncol(df))
+for (i in seq_along(df)) {
+  output[[i]] <- median(df[[i]])
+}
+```
+#preallocation (assign output) increases speed of computation
+
+```{r}
+#calculate mean for every column
+library(tidyverse)
+library(rcfss)
+library(knitr)
+as_tibble(mtcars)
+output <- vector(mode="double", length=ncol(mtcars))
+for (i in seq_along(mtcars)) {
+  output[[i]] <- mean(mtcars[[i]])
+}
+output
+
+
+```
+
+
+MAP FUNCTIONS
+part of the library(purr) package of tidyverse.. verbs>>>nouns
+typles of map() functions
+
+map() makes a list
+map_lgl() makes a logical vector
+map_int() makes an integer vector
+map_dbl() makes a double vector
+map_chr() charachter vector
+
+map_dbl(dataframe,mathematical operation you want to do on each column, na.rm= TRUE)
+
+eg
+map_dbl(mtcars, mean, na.rm=TRUE)
+
+can be piped tho
+ 
+SCOPED VERBS
+3rd kind of iterative operation:
+- input is always dataframe, output is always dataframe
+
+mtcars %>%
+  summarize() or mutate() or filter()
+
+which vars to operate on?
+
+_if
+pick vars to operate on based on another function (eg if a charachter variable)
+mtcars %>%
+summarize_if(is.numeric, mean, is.na=TRUE)
+
+
+_at
+pick specific variables like select function that you name
+summariz_at(mtcars,vars(mpg),funs(min,max))
+
+funs=which operations you do
+vars=which vars get operated on
+
+_all
+all vars
+
+summarize_all(mtcars, funs(min, max))
+
+*_*_*_*_*_*
+Helpful for map() functions:
+
+**can use a nest() function to create a list column in the dataset, where each value is a dataframe
+**use a broom function
+
+y_country <- gapminder %>% 
+  group_by(country, continent) %>% 
+  nest()
+
+by_country
+## # A tibble: 142 x 3
+##        country continent              data
+##         <fctr>    <fctr>            <list>
+##  1 Afghanistan      Asia <tibble [12 x 4]>
+##  2     Albania    Europe <tibble [12 x 4]>
+##  3     Algeria    Africa <tibble [12 x 4]>
+##  4      Angola    Africa <tibble [12 x 4]>
+##  5   Argentina  Americas <tibble [12 x 4]>
+##  6   Australia   Oceania <tibble [12 x 4]>
+##  7     Austria    Europe <tibble [12 x 4]>
+##  8     Bahrain      Asia <tibble [12 x 4]>
+##  9  Bangladesh      Asia <tibble [12 x 4]>
+## 10     Belgium    Europe <tibble [12 x 4]>
+## # ... with 132 more rows

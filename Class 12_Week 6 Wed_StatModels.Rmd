@@ -1,0 +1,20 @@
+---
+title: "Class 12_Week 6_Wednes"
+author: "david"
+date: "May 2, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Decision Trees
+- like a linear reg, but better for categorical variables!
+- "non-robust" - result vulnerable to changes in a few observations in og dataw
+
+Random Forest 
+- Aggregation of many trees built using the same underlying data
+- bootstrap!!! sampling from your data w/ replacement *resampling*
+   - treat og data as population.. reqs. no assumptions about distribution
+   

@@ -1,0 +1,87 @@
+---
+title: "Week 6 Mon Apr 30 LinReg"
+author: "david"
+date: "April 30, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(rcfss)
+
+scorecard
+
+
+ggplot(scorecard, aes(admrate,cost)) +
+  geom_point() +
+#add a linear best fit line to the scatterplot
+  geom_smooth(method = lm)
+```
+
+```{r}
+#use the tidy function, in the broom package, to make the lm() LinReg results into a tidy dataframe
+library(broom)
+
+
+a<-lm(cost ~ admrate , data = scorecard)
+tidy(a)
+
+```
+
+
+
+
+
+Estimate separate linear regression models of the relationship between admission rate and cost for each type of college. Report the estimated parameters and standard errors in a tidy data frame.
+
+```{r}
+
+type_model <- function(df) {
+  lm(cost ~ admrate, data = df)
+}
+
+# nest the data frame
+by_type <- scorecard %>%
+  group_by(type) %>%
+  nest()
+by_type
+
+
+#estimate the model
+by_type <- by_type %>%
+  mutate(model = map(data, type_model))
+by_type
+
+
+# extract the parameters and print a tidy data frame
+by_type %>%
+  mutate(results = map(model, tidy)) %>%
+  unnest(results)
+
+
+```
+
+
+
+use glm() for logarithmic regression: 
+- generates a logarithmic line of best fit
+-problem: output = log values and not actual values
+
+
+
+
+
+
+
+
+
+
+
+
+
+
